@@ -1,0 +1,24 @@
+---
+kind: pipeline
+type: docker
+name: default
+steps:
+  - name: check_package
+    image: "testing"
+    pull: never
+    commands:
+      - echo "yolo"
+
+  - name: backend_testing
+    image: "testing"
+    pull: never
+    commands:
+      - export $(grep -v '^#' .env | xargs)
+      - export DB_PATH="$PWD/db.db"
+      - cat ./subjects/$SUBJECT/sql/data.sql | sqlite3 $DB_PATH
+      - npm --prefix ./packages/express-middleware install ./packages/express-middleware
+      - cd ./subjects/$SUBJECT/chai
+      - npm install
+      - npm run test -s
+    depends_on:
+      - check_package
