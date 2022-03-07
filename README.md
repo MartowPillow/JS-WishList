@@ -8,6 +8,6 @@ Le fichier ``docker-compose.yml`` permet de lancer un un certain nombre de conta
 
 ## Lancer le projet
 
-Pour lancer le projet vous devez copier coller le fichier ``.env.sample`` en ``.env`` et le complèter avec les bonnes valeurs. 
+Pour lancer le projet vous allez devoir executer la commande ``docker-compose up``
 
-Pour lancer le projet vous allez devoir executer la commande ``docker-compose up --build``
+Puis allez sur http://localhost:10200/
