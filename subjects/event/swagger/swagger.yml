@@ -1,0 +1,166 @@
+openapi: 3.0.0
+info:
+  title: Javascript Project
+  description: Api for Javascript Project
+  version: 1.0.0
+servers:
+  - url: http://localhost:10200/api
+    description: The api in the docker compose
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    event_read:
+      type: object
+      required:
+        - uuid
+        - name
+        - date
+        - duration
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Volcamp
+        date:
+          type: string
+          example: 14/10/2021
+        duration:
+          type: integer
+          example: 48
+    event_cu:
+      type: object
+      required:
+        - name
+        - date
+        - duration
+      properties:
+        name:
+          type: string
+          example: Volcamp
+        date:
+          type: string
+          example: 14/10/2021
+        duration:
+          type: integer
+          example: 48
+paths:
+  /login:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: Login success
+  /event:
+    get:
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: '"List all event'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/event_read"
+        "401":
+          description: Unauthorized
+    post:
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/event_cu"
+      responses:
+        "201":
+          description: event created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/event_read"
+        "401":
+          description: Unauthorized
+        "422":
+          description: event payload is invalid
+  "/event/{uuid}":
+    get:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The event id
+      responses:
+        "200":
+          description: event founded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/event_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: event not found
+    put:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The event id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/event_cu"
+      responses:
+        "200":
+          description: event modified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/event_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: event not found
+        "422":
+          description: event payload is invalid
+    delete:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The event id
+      responses:
+        "204":
+          description: event deleted
+        "401":
+          description: Unauthorized
+        "404":
+          description: event not found

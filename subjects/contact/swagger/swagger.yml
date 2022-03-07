@@ -1,0 +1,174 @@
+openapi: 3.0.0
+info:
+  title: Javascript Project
+  description: Api for Javascript Project
+  version: 1.0.0
+servers:
+  - url: http://localhost:10200/api
+    description: The api in the docker compose
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    contact_read:
+      type: object
+      required:
+        - uuid
+        - name
+        - about
+        - type
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Jack O'Neill
+        about:
+          type: string
+          example: Live in Colorado
+        type:
+          type: string
+          enum:
+            - work
+            - friend
+            - other
+          example: work
+    contact_cu:
+      type: object
+      required:
+        - name
+        - about
+        - type
+      properties:
+        name:
+          type: string
+          example: Jack O'Neill
+        about:
+          type: string
+          example: Live in Colorado
+        type:
+          type: string
+          enum:
+            - work
+            - friend
+            - other
+          example: work
+paths:
+  /login:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: Login success
+  /contact:
+    get:
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: '"List all contact'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/contact_read"
+        "401":
+          description: Unauthorized
+    post:
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/contact_cu"
+      responses:
+        "201":
+          description: contact created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/contact_read"
+        "401":
+          description: Unauthorized
+        "422":
+          description: contact payload is invalid
+  "/contact/{uuid}":
+    get:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The contact id
+      responses:
+        "200":
+          description: contact founded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/contact_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: contact not found
+    put:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The contact id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/contact_cu"
+      responses:
+        "200":
+          description: contact modified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/contact_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: contact not found
+        "422":
+          description: contact payload is invalid
+    delete:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The contact id
+      responses:
+        "204":
+          description: contact deleted
+        "401":
+          description: Unauthorized
+        "404":
+          description: contact not found

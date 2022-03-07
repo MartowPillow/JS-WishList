@@ -1,0 +1,8 @@
+licpro-2021/accountancy:
+  vars:
+    subject: accountancy
+  members:
+    - email: john.doe@mail.com
+      firstname: John
+      lastname: doe
+      username: ldo

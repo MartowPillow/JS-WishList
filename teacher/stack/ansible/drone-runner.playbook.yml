@@ -1,0 +1,32 @@
+- name: Fact from swarm manager
+  vars_files:
+    - vars/vars.yml
+  hosts:
+    - primary
+  tasks:
+    - name: "Get Info"
+      become: yes
+      community.general.docker_swarm_info:
+      register: swarm_info
+    - name: Set manager Fact
+      ansible.builtin.set_fact:
+        swarm: result.swarm_facts
+        cacheable: true
+
+- name: Fact from manager
+  vars_files:
+    - vars/vars.yml
+  hosts:
+    - runners
+  tasks:
+    - name: "Install Docker"
+      include_tasks: "tasks/docker.task.yml"
+    - name: join swarm
+      become: yes
+      community.general.docker_swarm:
+        state: join
+        join_token: "{{ hostvars[groups['primary'][0]].swarm_info.swarm_facts.JoinTokens.Worker }}"
+        remote_addrs: "{{ hostvars[groups['primary'][0]].ansible_facts[private_interface_name].ipv4.address }}"
+        advertise_addr: "{{ ansible_facts[private_interface_name].ipv4.address }}"
+    - name: "Build image for build"
+      include_tasks: "tasks/docker-build.yml"

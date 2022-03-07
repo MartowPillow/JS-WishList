@@ -1,0 +1,174 @@
+openapi: 3.0.0
+info:
+  title: Javascript Project
+  description: Api for Javascript Project
+  version: 1.0.0
+servers:
+  - url: http://localhost:10200/api
+    description: The api in the docker compose
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    song_read:
+      type: object
+      required:
+        - uuid
+        - name
+        - duration
+        - mood
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Call me maybe
+        duration:
+          type: integer
+          example: 190
+        mood:
+          type: string
+          enum:
+            - work
+            - training
+            - party
+          example: party
+    song_cu:
+      type: object
+      required:
+        - name
+        - duration
+        - mood
+      properties:
+        name:
+          type: string
+          example: Call me maybe
+        duration:
+          type: integer
+          example: 190
+        mood:
+          type: string
+          enum:
+            - work
+            - training
+            - party
+          example: party
+paths:
+  /login:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: Login success
+  /song:
+    get:
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: '"List all song'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/song_read"
+        "401":
+          description: Unauthorized
+    post:
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/song_cu"
+      responses:
+        "201":
+          description: song created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/song_read"
+        "401":
+          description: Unauthorized
+        "422":
+          description: song payload is invalid
+  "/song/{uuid}":
+    get:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The song id
+      responses:
+        "200":
+          description: song founded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/song_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: song not found
+    put:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The song id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/song_cu"
+      responses:
+        "200":
+          description: song modified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/song_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: song not found
+        "422":
+          description: song payload is invalid
+    delete:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The song id
+      responses:
+        "204":
+          description: song deleted
+        "401":
+          description: Unauthorized
+        "404":
+          description: song not found

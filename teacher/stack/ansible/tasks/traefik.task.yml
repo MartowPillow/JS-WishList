@@ -1,0 +1,102 @@
+- name: "Create docker network for traefik"
+  become: yes
+  community.general.docker_network:
+    name: traefik
+    driver: overlay
+    scope: swarm
+
+- name: "Add traefik etc dir"
+  become: yes
+  ansible.builtin.file:
+    path: /etc/traefik
+    state: directory
+  
+- name: "Add traefik share dir"
+  become: yes
+  ansible.builtin.file:
+    path: /etc/traefik/share
+    state: directory
+
+- name: "Add traefik configuration"
+  become: yes
+  ansible.builtin.template:
+    src: templates/traefik/traefik.yml.j2
+    dest: /etc/traefik/traefik.yml
+
+- name: Add secret for ovh api consumer key
+  include_tasks: "docker_secret.yml"
+  vars:
+    _docker_service_name: "traefik"
+    _docker_secret_name: "ovh_api_consumer_key"
+    _docker_secret_data: "{{ ovh_api_consumer_key }}"
+
+# - name: Add secret for ovh api consumer key
+#   become: yes
+#   community.general.docker_secret:
+#     name: ovh_api_consumer_key
+#     data: "{{ ovh_api_consumer_key }}"
+
+- name: Add secret for ovh api key
+  include_tasks: "docker_secret.yml"
+  vars:
+    _docker_service_name: "traefik"
+    _docker_secret_name: "ovh_api_key"
+    _docker_secret_data: "{{ ovh_api_key }}"
+
+# - name: Add secret for ovh api key
+#   become: yes
+#   community.general.docker_secret:
+#     name: ovh_api_key
+#     data: "{{ ovh_api_key }}"
+
+- name: Add secret for ovh api secret
+  include_tasks: "docker_secret.yml"
+  vars:
+    _docker_service_name: "traefik"
+    _docker_secret_name: "ovh_api_secret"
+    _docker_secret_data: "{{ ovh_api_secret }}"
+
+- name: Add secret for ovh api secret
+  become: yes
+  community.general.docker_secret:
+    name: ovh_api_secret
+    data: "{{ ovh_api_secret }}"
+
+- name: Install Traefik
+  become: yes
+  community.general.docker_swarm_service:
+    name: traefik
+    image: "traefik:v2.3.4"
+    force_update: true
+    publish:
+      - published_port: 443
+        target_port: 443
+      - published_port: 8080
+        target_port: 8080
+      - published_port: 80
+        target_port: 80
+    mounts:
+      - source: /var/run/docker.sock
+        target: /var/run/docker.sock
+      - source: /etc/traefik/traefik.yml
+        target: /etc/traefik/traefik.yml
+      - source: /etc/traefik/share
+        target: /traefik
+    labels:
+      traefik.http.routers.traefik.entrypoints: "https"
+      traefik.http.routers.traefik.rule: "Host(`{{ traefik_domain}}`)"
+      traefik.http.services.traefik.loadbalancer.server.port: "8080"
+    env:
+      OVH_ENDPOINT: ovh-eu
+      OVH_APPLICATION_KEY_FILE: "/var/run/secrets/ovh_api_key"
+      OVH_APPLICATION_SECRET_FILE: "/var/run/secrets/ovh_api_secret"
+      OVH_CONSUMER_KEY_FILE: "/var/run/secrets/ovh_api_consumer_key"
+    secrets:
+      - secret_name: 'ovh_api_key'
+      - secret_name: 'ovh_api_secret'
+      - secret_name: 'ovh_api_consumer_key'
+    networks:
+      - traefik
+    placement:
+      constraints:
+        - "node.role==manager"

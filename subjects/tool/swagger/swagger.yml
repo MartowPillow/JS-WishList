@@ -1,0 +1,158 @@
+openapi: 3.0.0
+info:
+  title: Javascript Project
+  description: Api for Javascript Project
+  version: 1.0.0
+servers:
+  - url: http://localhost:10200/api
+    description: The api in the docker compose
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    tool_read:
+      type: object
+      required:
+        - uuid
+        - name
+        - year
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Band saw
+        year:
+          type: integer
+          example: 1980
+    tool_cu:
+      type: object
+      required:
+        - name
+        - year
+      properties:
+        name:
+          type: string
+          example: Band saw
+        year:
+          type: integer
+          example: 1980
+paths:
+  /login:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: Login success
+  /tool:
+    get:
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: '"List all tool'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/tool_read"
+        "401":
+          description: Unauthorized
+    post:
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/tool_cu"
+      responses:
+        "201":
+          description: tool created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tool_read"
+        "401":
+          description: Unauthorized
+        "422":
+          description: tool payload is invalid
+  "/tool/{uuid}":
+    get:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The tool id
+      responses:
+        "200":
+          description: tool founded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tool_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: tool not found
+    put:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The tool id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/tool_cu"
+      responses:
+        "200":
+          description: tool modified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tool_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: tool not found
+        "422":
+          description: tool payload is invalid
+    delete:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The tool id
+      responses:
+        "204":
+          description: tool deleted
+        "401":
+          description: Unauthorized
+        "404":
+          description: tool not found

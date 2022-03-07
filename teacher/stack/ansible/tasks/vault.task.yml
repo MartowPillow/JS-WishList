@@ -1,0 +1,17 @@
+- name: Install Vault
+  become: yes
+  community.general.docker_swarm_service:
+    name: vault
+    image: "vault:1.6.0"
+    labels:
+      traefik.http.routers.vault.entrypoints: "https"
+      traefik.http.routers.vault.rule: "Host(`{{ vault_domain }}`)"
+      traefik.http.services.vault.loadbalancer.server.port: "8200"
+    env:
+      - VAULT_ADDR='http://0.0.0.0:8200'
+      - VAULT_DEV_ROOT_TOKEN_ID=myroot2
+    networks:
+      - traefik
+    placement:
+      constraints:
+        - "node.role==manager"

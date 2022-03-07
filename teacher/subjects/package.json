@@ -1,0 +1,7 @@
+{
+    "name": "subject-generator",
+    "dependencies": {
+        "yaml": "1.10.0",
+        "handlebars": "4.7.6"
+    }
+}

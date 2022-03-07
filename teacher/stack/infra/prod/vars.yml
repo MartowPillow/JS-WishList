@@ -1,0 +1,4 @@
+ansible_user: debian
+private_interface_name: eth0
+domain_name: "edu.dioudonnat.fr"
+env: local

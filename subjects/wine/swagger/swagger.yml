@@ -1,0 +1,176 @@
+openapi: 3.0.0
+info:
+  title: Javascript Project
+  description: Api for Javascript Project
+  version: 1.0.0
+servers:
+  - url: http://localhost:10200/api
+    description: The api in the docker compose
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    wine_read:
+      type: object
+      required:
+        - uuid
+        - name
+        - year
+        - region
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Cote Rotie
+        year:
+          type: integer
+          example: 2017
+        region:
+          type: string
+          enum:
+            - rhone
+            - auvergne
+            - bordeau
+            - languedoc
+          example: rhone
+    wine_cu:
+      type: object
+      required:
+        - name
+        - year
+        - region
+      properties:
+        name:
+          type: string
+          example: Cote Rotie
+        year:
+          type: integer
+          example: 2017
+        region:
+          type: string
+          enum:
+            - rhone
+            - auvergne
+            - bordeau
+            - languedoc
+          example: rhone
+paths:
+  /login:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: Login success
+  /wine:
+    get:
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: '"List all wine'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/wine_read"
+        "401":
+          description: Unauthorized
+    post:
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/wine_cu"
+      responses:
+        "201":
+          description: wine created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/wine_read"
+        "401":
+          description: Unauthorized
+        "422":
+          description: wine payload is invalid
+  "/wine/{uuid}":
+    get:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The wine id
+      responses:
+        "200":
+          description: wine founded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/wine_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: wine not found
+    put:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The wine id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/wine_cu"
+      responses:
+        "200":
+          description: wine modified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/wine_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: wine not found
+        "422":
+          description: wine payload is invalid
+    delete:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The wine id
+      responses:
+        "204":
+          description: wine deleted
+        "401":
+          description: Unauthorized
+        "404":
+          description: wine not found

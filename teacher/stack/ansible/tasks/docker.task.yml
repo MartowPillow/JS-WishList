@@ -1,0 +1,48 @@
+- name: Remove old docker version Docker
+  become: yes
+  ansible.builtin.package:
+    name: docker.io
+    state: absent
+  # sudo apt remove docker.io # ubunut/debian
+  # sudo yum remove docker.io # centos
+  
+- name: Install docker dependencies
+  become: yes
+  ansible.builtin.package:
+    name: "{{ item }}"
+  loop:
+    - apt-transport-https
+    - ca-certificates
+    - gnupg-agent
+    - software-properties-common
+
+- name: Add an Apt docker signing key
+  become: yes
+  ansible.builtin.apt_key:
+    url: https://download.docker.com/linux/debian/gpg
+    state: present
+
+- name: Add docker apt repository
+  become: yes
+  ansible.builtin.apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/debian buster stable
+    state: present
+    update_cache: yes
+
+- name: Install docker
+  become: yes
+  ansible.builtin.package:
+    name: "{{ item }}"
+  loop:
+    - docker-ce 
+    - docker-ce-cli 
+    - containerd.io
+
+- name: Install pip3
+  become: yes
+  ansible.builtin.package:
+    name: "python3-pip"
+- name: "Install docker python SDK"
+  become: yes
+  ansible.builtin.pip:
+    name: "docker==4.4.0"

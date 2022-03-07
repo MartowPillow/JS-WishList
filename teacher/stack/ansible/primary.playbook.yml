@@ -1,0 +1,41 @@
+- name: Primary serveur
+  vars_files:
+    - vars/vars.yml
+  hosts:
+    - primary
+  tasks:
+    - name: "Install Docker"
+      include_tasks: "tasks/docker.task.yml"
+
+    # - name: "Update hosts"
+    #   become: yes
+    #   ansible.builtin.template:
+    #     src: templates/hosts/hosts.j2
+    #     dest: /etc/hosts
+    #   vars: 
+    #     hosts:
+    #       - ip: "127.0.0.1"
+    #         name: "{{ vault_domain }}"
+
+    # - name: "docker login"
+    #   become: yes
+    #   community.general.docker_login:
+    #     username: claudusd
+
+    - name: Install Swarm
+      become: yes
+      community.general.docker_swarm:
+        state: present
+        advertise_addr: "{{ ansible_facts[private_interface_name].ipv4.address }}"
+
+    - name: "Install traefik"
+      include_tasks: "tasks/traefik.task.yml"
+
+    - name: "Install portainer"
+      include_tasks: "tasks/portainer.task.yml"
+    
+    - name: "Install vault"
+      include_tasks: "tasks/vault.task.yml"
+
+    - name: "Install drone"
+      include_tasks: "tasks/drone.task.yml"

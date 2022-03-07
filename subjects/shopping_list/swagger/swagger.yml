@@ -1,0 +1,176 @@
+openapi: 3.0.0
+info:
+  title: Javascript Project
+  description: Api for Javascript Project
+  version: 1.0.0
+servers:
+  - url: http://localhost:10200/api
+    description: The api in the docker compose
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    shopping_list_read:
+      type: object
+      required:
+        - uuid
+        - name
+        - price
+        - type
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Avocado
+        price:
+          type: number
+          format: float
+          example: 1.45
+        type:
+          type: string
+          enum:
+            - purchased
+            - lack
+            - not_urgent
+          example: lack
+    shopping_list_cu:
+      type: object
+      required:
+        - name
+        - price
+        - type
+      properties:
+        name:
+          type: string
+          example: Avocado
+        price:
+          type: number
+          format: float
+          example: 1.45
+        type:
+          type: string
+          enum:
+            - purchased
+            - lack
+            - not_urgent
+          example: lack
+paths:
+  /login:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: Login success
+  /shopping_list:
+    get:
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: '"List all shopping_list'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/shopping_list_read"
+        "401":
+          description: Unauthorized
+    post:
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/shopping_list_cu"
+      responses:
+        "201":
+          description: shopping_list created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/shopping_list_read"
+        "401":
+          description: Unauthorized
+        "422":
+          description: shopping_list payload is invalid
+  "/shopping_list/{uuid}":
+    get:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The shopping_list id
+      responses:
+        "200":
+          description: shopping_list founded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/shopping_list_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: shopping_list not found
+    put:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The shopping_list id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/shopping_list_cu"
+      responses:
+        "200":
+          description: shopping_list modified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/shopping_list_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: shopping_list not found
+        "422":
+          description: shopping_list payload is invalid
+    delete:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The shopping_list id
+      responses:
+        "204":
+          description: shopping_list deleted
+        "401":
+          description: Unauthorized
+        "404":
+          description: shopping_list not found

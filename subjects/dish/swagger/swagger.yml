@@ -1,0 +1,174 @@
+openapi: 3.0.0
+info:
+  title: Javascript Project
+  description: Api for Javascript Project
+  version: 1.0.0
+servers:
+  - url: http://localhost:10200/api
+    description: The api in the docker compose
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    dish_read:
+      type: object
+      required:
+        - uuid
+        - name
+        - type
+        - restaurant
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Truffade
+        type:
+          type: string
+          enum:
+            - starter
+            - main
+            - desert
+          example: main
+        restaurant:
+          type: string
+          example: Puy de la lune
+    dish_cu:
+      type: object
+      required:
+        - name
+        - type
+        - restaurant
+      properties:
+        name:
+          type: string
+          example: Truffade
+        type:
+          type: string
+          enum:
+            - starter
+            - main
+            - desert
+          example: main
+        restaurant:
+          type: string
+          example: Puy de la lune
+paths:
+  /login:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: Login success
+  /dish:
+    get:
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: '"List all dish'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/dish_read"
+        "401":
+          description: Unauthorized
+    post:
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/dish_cu"
+      responses:
+        "201":
+          description: dish created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dish_read"
+        "401":
+          description: Unauthorized
+        "422":
+          description: dish payload is invalid
+  "/dish/{uuid}":
+    get:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The dish id
+      responses:
+        "200":
+          description: dish founded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dish_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: dish not found
+    put:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The dish id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/dish_cu"
+      responses:
+        "200":
+          description: dish modified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dish_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: dish not found
+        "422":
+          description: dish payload is invalid
+    delete:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The dish id
+      responses:
+        "204":
+          description: dish deleted
+        "401":
+          description: Unauthorized
+        "404":
+          description: dish not found

@@ -1,0 +1,168 @@
+openapi: 3.0.0
+info:
+  title: Javascript Project
+  description: Api for Javascript Project
+  version: 1.0.0
+servers:
+  - url: http://localhost:10200/api
+    description: The api in the docker compose
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    time_tracking_read:
+      type: object
+      required:
+        - uuid
+        - name
+        - date
+        - duration
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: code review
+        date:
+          type: string
+          example: 01/01/2021
+        duration:
+          type: number
+          format: float
+          example: 2.75
+    time_tracking_cu:
+      type: object
+      required:
+        - name
+        - date
+        - duration
+      properties:
+        name:
+          type: string
+          example: code review
+        date:
+          type: string
+          example: 01/01/2021
+        duration:
+          type: number
+          format: float
+          example: 2.75
+paths:
+  /login:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: Login success
+  /time_tracking:
+    get:
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: '"List all time_tracking'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/time_tracking_read"
+        "401":
+          description: Unauthorized
+    post:
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/time_tracking_cu"
+      responses:
+        "201":
+          description: time_tracking created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/time_tracking_read"
+        "401":
+          description: Unauthorized
+        "422":
+          description: time_tracking payload is invalid
+  "/time_tracking/{uuid}":
+    get:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The time_tracking id
+      responses:
+        "200":
+          description: time_tracking founded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/time_tracking_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: time_tracking not found
+    put:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The time_tracking id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/time_tracking_cu"
+      responses:
+        "200":
+          description: time_tracking modified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/time_tracking_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: time_tracking not found
+        "422":
+          description: time_tracking payload is invalid
+    delete:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The time_tracking id
+      responses:
+        "204":
+          description: time_tracking deleted
+        "401":
+          description: Unauthorized
+        "404":
+          description: time_tracking not found

@@ -1,0 +1,176 @@
+openapi: 3.0.0
+info:
+  title: Javascript Project
+  description: Api for Javascript Project
+  version: 1.0.0
+servers:
+  - url: http://localhost:10200/api
+    description: The api in the docker compose
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    beer_read:
+      type: object
+      required:
+        - uuid
+        - degree
+        - name
+        - family
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        degree:
+          type: number
+          format: float
+          example: 8.5
+        name:
+          type: string
+          example: Delirium Nocturnum
+        family:
+          type: string
+          enum:
+            - ale
+            - pils
+            - lager
+          example: ale
+    beer_cu:
+      type: object
+      required:
+        - degree
+        - name
+        - family
+      properties:
+        degree:
+          type: number
+          format: float
+          example: 8.5
+        name:
+          type: string
+          example: Delirium Nocturnum
+        family:
+          type: string
+          enum:
+            - ale
+            - pils
+            - lager
+          example: ale
+paths:
+  /login:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: Login success
+  /beer:
+    get:
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: '"List all beer'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/beer_read"
+        "401":
+          description: Unauthorized
+    post:
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/beer_cu"
+      responses:
+        "201":
+          description: beer created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/beer_read"
+        "401":
+          description: Unauthorized
+        "422":
+          description: beer payload is invalid
+  "/beer/{uuid}":
+    get:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The beer id
+      responses:
+        "200":
+          description: beer founded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/beer_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: beer not found
+    put:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The beer id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/beer_cu"
+      responses:
+        "200":
+          description: beer modified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/beer_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: beer not found
+        "422":
+          description: beer payload is invalid
+    delete:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The beer id
+      responses:
+        "204":
+          description: beer deleted
+        "401":
+          description: Unauthorized
+        "404":
+          description: beer not found

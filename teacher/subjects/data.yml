@@ -1,0 +1,661 @@
+idiot:
+  description: Idiot implementation for teacher only
+  properties:
+    foo:
+      type: string
+    too:
+      type: integer
+    roo:
+      type: enum
+      enum:
+        - "yes"
+        - "no"
+  examples:
+    - foo: alpha
+      too: 6
+      roo: "yes"
+      user: user1
+    - foo: beta
+      too: -7
+      roo: "no"
+      user: user1
+    - foo: "gamma"
+      too: 0
+      roo: "yes"
+      user: user2
+article:
+  description: List of article to read
+  properties:
+    state:
+      type: enum
+      enum:
+        - wait
+        - read
+    url:
+      type: string
+    priority:
+      type: integer
+  examples:
+    - state: read
+      url: https://www.conseil-constitutionnel.fr/sites/default/files/as/root/bank_mm/anglais/constiution_anglais_oct2009.pdf
+      priority: 4
+      user: user1
+    - state: wait
+      url: https://www.clever-cloud.com/blog/engineering/2019/01/07/git-am-how-to-fork/
+      priority: 7
+      user: user1
+    - state: wait
+      url: "https://www.uca.fr/actualites/toutes-les-actualites/vie-de-luniversite/suivi-de-levolution-du-nombre-de-personnels-et-detudiants-covid-et-analyse-de-lorigine-de-leur-contamination-a-luniversite-clermont-auvergne-et-etablissements-associes"
+      priority: 1
+      user: user2
+book:
+  description: Book list
+  properties:
+    name:
+      type: string
+    review:
+      type: string
+    page_read:
+      type: integer
+  examples:
+    - name: "Pro Git"
+      review: "Good book to learn git"
+      page_read: 167
+      user: user1
+    - name: "The Silmarillion"
+      review: "Before the LOTR's serie on amazon"
+      page_read: 443
+      user: user1
+    - name: "Le grand guide Marabout de l'auto-suffisance"
+      review: "How to grow vegetables"
+      page_read: 408
+      user: user2
+contact:
+  description: List of contact
+  properties:
+    name:
+      type: string
+    about:
+      type: string
+    type:
+      type: enum
+      enum:
+        - work
+        - friend
+        - other
+  examples:
+    - name: "Jack O'Neill"
+      about: "Live in Colorado"
+      type: work
+      user: user1
+    - name: "Valéry Giscard d'Estaing"
+      about: "greatest president"
+      type: friend
+      user: user1
+    - name: "Ada Lovelace"
+      about: "The first one"
+      type: other
+      user: user2
+beer:
+  description: List of beer
+  properties:
+    degree:
+      type: float
+      example: 8.5
+    name: 
+      type: string
+      example: Delirium nocturnum
+    family:
+      type: enum
+      enum: 
+        - ale
+        - pils
+        - lager
+      example: ale
+  examples:
+    - degree: 8.5
+      name: Delirium Nocturnum
+      family: ale
+      user: user1
+    - degree: 5.2
+      name: Jupiler
+      family: pils
+      user: user1
+    - degree: 4.4
+      name: Pilsner Urquell
+      family: lager
+      user: user2
+dish:
+  description: A list of dish
+  properties:
+    name:
+      type: string
+    type:
+      type: enum
+      enum:
+        - starter
+        - main
+        - desert
+    restaurant:
+      type: string
+  examples:
+    - name: Truffade
+      type: main
+      restaurant: Puy de la lune
+      user: user1
+    - name: Panna cotta
+      type: desert
+      restaurant: Caffe Mazzo
+      user: user1
+    - name: Escargots en coque d'oignon
+      type: starter
+      restaurant: 
+      user: user2
+event:
+  description: List of events
+  properties:
+    name: 
+      type: string
+    date:
+      type: string
+    duration:
+      type: integer
+
+  examples:
+    - name: Volcamp
+      date: "14/10/2021"
+      duration: 48
+      user: user1
+    - name: Clermont'ech
+      date: "17/02/2021"
+      duration: 5
+      user: user1
+    - name: Élections régionales françaises
+      date: "20/06/2021"
+      duration: 24
+      user: user2
+expense:
+  description: List of expense
+  properties:
+    name: 
+      type: string
+      example: Masque
+    date:
+      type: string
+      example: "31/12/2020"
+    amount:
+      type: float
+      example: 14.78
+  examples:
+    - name: DoMac
+      date: "19/01/2021"
+      amount: 12.45
+      user: user1
+    - name: EDF
+      date: "9/01/2021"
+      amount: 37.89
+      user: user1
+    - name: Hulu
+      date: "01/01/2021"
+      amount: 10
+      user: user2
+family_tree:
+  description: Family member
+  properties:
+    name:
+      type: string
+    origin:
+      type: enum
+      enum:
+        - mother
+        - father
+        - sister
+        - brother
+    birth_year:
+      type: integer
+  examples:
+    - name: Berthe
+      origin: father
+      birth_year: 1789
+      user: user1
+    - name: Josiane
+      origin: sister
+      birth_year: 2015
+      user: user1
+    - name: Jack
+      origin: mother
+      birth_year: 1967
+      user: user2
+gif:
+  description: "List of nice gif for email"
+  properties:
+    name: 
+      type: string
+    url:
+      type: string
+    situation:
+      type: enum
+      enum: 
+        - work
+        - friend
+        - family
+  examples:
+    - name: "don't click"
+      url: https://gph.is/g/aewLXN4
+      situation: work
+      user: user1
+    - name: "beer time"
+      url: https://gph.is/1kjPqz1
+      situation: friend
+      user: user1
+    - name: "I'm late"
+      url: https://gph.is/2zwugvc
+      situation: family
+      user: user2
+land_registry:
+  description: List of land
+  properties:
+    commune:
+      type: string
+    ref:
+      type: string
+    area:
+      type: float
+  examples:
+    - commune: Clermont-Ferrand
+      ref: D67
+      area: 1.78
+      user: user1
+    - commune: Clermont-Ferrand
+      ref: D68
+      area: 3
+      user: user1
+    - commune: Aubière
+      ref: H42
+      area: 25
+      user: user2
+loan:
+  description: Loan thing
+  properties:
+    name:
+      type: string
+    borrow:
+      type: string
+    date:
+      type: string
+  examples:
+    - name: Star Wars episode 3
+      borrow: Tahar
+      date: "23/05/2006"
+      user: user1
+    - name: Git Pro
+      borrow: Laurent
+      date: 16/01/2021
+      user: user1
+    - name: RJ45 Tester
+      borrow: Bobo
+      date: 18/01/2021
+      user: user2
+note:
+  description: List of note
+  properties:
+    name:
+      type: string
+    content:
+      type: string
+    category:
+      type: enum
+      enum: 
+        - personal
+        - work
+        - secret 
+      example: secret
+  examples:
+    - name: Plan to become rich
+      content: Say you can go futher than Mars
+      category: secret
+      user: user1
+    - name: Run prod
+      content: sudo deploy prod
+      category: work
+      user: user1
+    - name: Lorem Ipsum 
+      content: Lorem ipsum dolor sit amet
+      category: personal
+      user: user2
+shopping_list:
+  description: List of shopping list
+  properties:
+    name:
+      type: string
+      example: "Avocado"
+    price:
+      type: float
+      example: 1.45
+    type:
+      type: enum
+      enum:
+        - purchased
+        - lack
+        - not_urgent
+      example: lack
+  examples:
+    - name: Avocado
+      price: 1.45
+      type: lack
+      user: user1
+    - name: Beer
+      price: 15.78
+      type: not_urgent
+      user: user1
+    - name: Rasberry
+      price: 35
+      type: purchased
+      user: user2
+song:
+  description: 
+  properties:
+    name: 
+      type: string
+      example: "Call me maybe"
+    duration: 
+      type: integer
+      example: 190
+    mood:
+      type: enum
+      enum:
+        - work
+        - training
+        - party
+      example: party
+  examples:
+    - name: "Call me maybe"
+      duration: 190
+      mood: party
+      user: user1
+    - name: "OMIDO - LSD"
+      duration: 190
+      mood: work
+      user: user1
+    - name: "Daft Punk - Harder, Better, Faster, Stronger (Far Out Remix)"
+      duration: 191
+      mood: training
+      user: user2
+subscription:
+  description:
+  properties:
+    name: 
+      type: string
+    amount:
+      type: float
+    recurrence:
+      type: enum
+      enum:
+        - monthly
+        - annually
+  examples:
+    - name: EDF
+      amount: 30.45
+      recurrence: monthly
+      user: user1
+    - name: Hulu
+      amount: 10
+      recurrence: monthly
+      user: user1
+    - name: Tax
+      amount: 1000
+      recurrence: annually
+      user: user2
+talk:
+  description:
+  properties:
+    name: 
+      type: string
+    speaker:
+      type: string
+    location:
+      type: "string"
+  examples:
+    - name: CQRS et event sourcing
+      speaker: Matthieu Moquet
+      location: Lavajug
+      user: user1
+    - name: Découverte de l'Infrastructure as Code
+      speaker: Florian Forestier
+      location: Clermont'ech
+      user: user1
+    - name: "Consul Criteo: Des services un peu, des machines beaucoup, du ServiceMesh bientôt"
+      speaker: Pierre Souchay
+      location: Devoxx FR
+      user: user2
+technical_term:
+  description:
+  properties:
+    name:
+      type: string
+    definition:
+      type: string
+  examples:
+    - name: faîtage
+      definition: Le haut de la charpente
+      user: user1
+    - name: mur de refend
+      definition: Mur porteur interieur
+      user: user1
+    - name: CQRS
+      definition: Separation ecriture et lecture
+      user: user2
+time_tracking:
+  description:
+  properties:
+    name:
+      type: string
+    date:
+      type: string
+    duration:
+      type: float
+  examples:
+    - name: code review
+      date: "01/01/2021"
+      duration: 2.75
+      user: user1
+    - name: clean
+      date: "02/01/2021"
+      duration: 0.75
+      user: user1
+    - name: "reading"
+      date: "05/01/2020"
+      duration: 3.5
+      user: user2
+tool:
+  description:
+  properties:
+    name:
+      type: string
+    year:
+      type: integer
+  examples:
+    - name: Band saw
+      year: 1980
+      user: user1
+    - name: Hedge trimmer
+      year: 2019
+      user: user1
+    - name: Mower
+      year: 2010
+      user: user2
+travel:
+  description:
+  properties:
+    name:
+      type: string
+    date:
+      type: string
+    days:
+      type: integer
+  examples:
+    - name: Brussels
+      date: "01/01/2020"
+      days: 2
+      user: user1
+    - name: London
+      date: "10/10/2016"
+      days: 2
+      user: user1
+    - name: Budapest
+      date: "13/08/207"
+      days: 10
+      user: user2
+training:
+  description:
+  properties:
+    date:
+      type: "string"
+    duration:
+      type: float
+    type:
+      type: enum
+      enum:
+        - run
+        - bike
+        - walk
+  examples:
+    - date: 01/01/2021
+      duration: 1.5
+      type: bike
+      user: user1
+    - date: 04/01/2021
+      duration: 0.75
+      type: run
+      user: user1
+    - date: 16/01/2021
+      duration: 3
+      type: walk
+      user: user2
+todo:
+  description:
+  properties:
+    name:
+      type: string
+    before:
+      type: string
+    priority:
+      type: enum
+      enum:
+        - medium
+        - low
+        - hight
+  examples:
+    - name: Tax declaration
+      before: "31/04/2021"
+      priority: hight
+      user: user1
+    - name: Deadline project
+      before: "15/03/2021"
+      priority: low
+      user: user1
+    - name: Tax declaration
+      before: "31/01/2021"
+      priority: hight
+      user: user2
+wardrobes:
+  description:
+  properties:
+    season:
+      type: enum
+      enum:
+        - winter
+        - summer
+        - spring
+        - autunm
+      example: winter
+    name:
+      type: string
+      example: "White woolen gilet"
+    brand:
+      type: string
+      example: "Homemade"
+  examples:
+    - season: winter
+      name: White woolen gilet
+      brand: Homemade
+      user: user1
+    - season: autunm
+      name: beige coat
+      brand: Father and Son
+      user: user1
+    - season: summer
+      name: Red skirt
+      brand: Jennifer
+      user: user2
+warranty:
+  description:
+  properties:
+    name:
+      type: string
+    end:
+      type: string
+    store:
+      type: string
+  examples:
+    - name: Headphone sony
+      end: 23/12/2022
+      store: Boulanger
+      user: user1
+    - name: lightsaber
+      end: 15/06/2022
+      store: Jedi Temple
+      user: user1
+    - name: Smart Watch
+      end: 15/04/2021
+      store: Darty
+      user: user2
+wine:
+  description:
+  properties:
+    name: 
+      type: string
+    year:
+      type: integer
+    region:
+      type: enum
+      enum:
+        - rhone
+        - auvergne
+        - bordeau
+        - languedoc
+  examples:
+    - name: Cote Rotie
+      year: 2017
+      region: rhone
+      user: user1
+    - name: La Chapelle de Potensac
+      year: 2017
+      region: bordeau
+      user: user1
+    - name: Domaine de La Borie Blanche
+      year: 2015
+      region: languedoc
+      user: user2
+wishlist:
+  description:
+  properties:
+   name:
+    type: string
+   store:
+    type: string
+   price:
+    type: float
+  examples:
+    - name: Cave à vin
+      store: Boulanger
+      price: 899.99
+      user: user1
+    - name: Galaxy S21
+      store: Darty
+      price: 1200.78
+      user: user1
+    - name: Tireuse à biere
+      store: Auchan
+      price: 120
+      user: user2

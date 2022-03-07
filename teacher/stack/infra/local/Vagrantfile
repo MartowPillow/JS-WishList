@@ -1,0 +1,51 @@
+Vagrant.configure("2") do |config|
+
+    runners_list = []
+
+    config.vm.define "primary" do |primary|
+        primary.vm.box = "debian/buster64"
+        primary.vm.box_version = "10.4.0"
+
+        primary.vm.network "private_network", ip: "192.168.40.2"
+        primary.vm.network "private_network", ip: "192.168.41.2"
+
+        primary.vm.provision "primary", type: "ansible" do | ansible |
+            ansible.playbook = "../../ansible/primary.playbook.yml"
+            ansible.playbook_command = "../../.venv/bin/ansible-playbook"
+            ansible.extra_vars = {
+                domain_name: "local.edu.dioudonnat.fr",
+                env: "local",
+                private_interface_name: "eth2"
+            }
+        end
+    end
+
+    runner_count = 1
+    (0..runner_count).each do | machine_id |
+        config.vm.define "runner_#{machine_id}" do | runner |
+            runner.vm.box = "debian/buster64"
+            runner.vm.box_version = "10.4.0"
+
+            runner.vm.network "private_network", ip: "192.168.40.#{machine_id + 20}"
+            runner.vm.network "private_network", ip: "192.168.41.#{machine_id + 20}"
+
+            runners_list.push("runner_#{machine_id}")
+
+            if (runner_count == machine_id) 
+                runner.vm.provision "drone-runner", type: "ansible" do | ansible |
+                    ansible.playbook = "../../ansible/drone-runner.playbook.yml"
+                    ansible.groups = {
+                        "runners" => runners_list
+                    }
+                    ansible.playbook_command = "../../.venv/bin/ansible-playbook"
+                    ansible.extra_vars = {
+                        domain_name: "local.edu.dioudonnat.fr",
+                        env: "local",
+                        private_interface_name: "eth2"
+                    }
+                    ansible.limit = "all"
+                end
+            end
+        end
+    end
+end

@@ -1,0 +1,166 @@
+openapi: 3.0.0
+info:
+  title: Javascript Project
+  description: Api for Javascript Project
+  version: 1.0.0
+servers:
+  - url: http://localhost:10200/api
+    description: The api in the docker compose
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    loan_read:
+      type: object
+      required:
+        - uuid
+        - name
+        - borrow
+        - date
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Star Wars episode 3
+        borrow:
+          type: string
+          example: Tahar
+        date:
+          type: string
+          example: 23/05/2006
+    loan_cu:
+      type: object
+      required:
+        - name
+        - borrow
+        - date
+      properties:
+        name:
+          type: string
+          example: Star Wars episode 3
+        borrow:
+          type: string
+          example: Tahar
+        date:
+          type: string
+          example: 23/05/2006
+paths:
+  /login:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: Login success
+  /loan:
+    get:
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: '"List all loan'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/loan_read"
+        "401":
+          description: Unauthorized
+    post:
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/loan_cu"
+      responses:
+        "201":
+          description: loan created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/loan_read"
+        "401":
+          description: Unauthorized
+        "422":
+          description: loan payload is invalid
+  "/loan/{uuid}":
+    get:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The loan id
+      responses:
+        "200":
+          description: loan founded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/loan_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: loan not found
+    put:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The loan id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/loan_cu"
+      responses:
+        "200":
+          description: loan modified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/loan_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: loan not found
+        "422":
+          description: loan payload is invalid
+    delete:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The loan id
+      responses:
+        "204":
+          description: loan deleted
+        "401":
+          description: Unauthorized
+        "404":
+          description: loan not found

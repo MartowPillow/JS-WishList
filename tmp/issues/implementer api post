@@ -1,0 +1,9 @@
+id: 2
+milestone: 1
+content: |
+    Implementer l'ajout de "{{subject}}" dans l'ai rest. 
+
+    Vous devez suivre la spec openapi qui se trouve 
+    [ici](https://github.com/{{full_reponame}}/blob/master/subjects/{{subject}}/swagger/swagger.yml).
+
+    Cette APP doit ecrire dans la table qui a pour [schema](https://github.com/{{full_reponame}}/blob/master/subjects/{{subject}}/sql/data.sql#L15)

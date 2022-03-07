@@ -1,0 +1,176 @@
+openapi: 3.0.0
+info:
+  title: Javascript Project
+  description: Api for Javascript Project
+  version: 1.0.0
+servers:
+  - url: http://localhost:10200/api
+    description: The api in the docker compose
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    family_tree_read:
+      type: object
+      required:
+        - uuid
+        - name
+        - origin
+        - birth_year
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Berthe
+        origin:
+          type: string
+          enum:
+            - mother
+            - father
+            - sister
+            - brother
+          example: father
+        birth_year:
+          type: integer
+          example: 1789
+    family_tree_cu:
+      type: object
+      required:
+        - name
+        - origin
+        - birth_year
+      properties:
+        name:
+          type: string
+          example: Berthe
+        origin:
+          type: string
+          enum:
+            - mother
+            - father
+            - sister
+            - brother
+          example: father
+        birth_year:
+          type: integer
+          example: 1789
+paths:
+  /login:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: Login success
+  /family_tree:
+    get:
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: '"List all family_tree'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/family_tree_read"
+        "401":
+          description: Unauthorized
+    post:
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/family_tree_cu"
+      responses:
+        "201":
+          description: family_tree created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/family_tree_read"
+        "401":
+          description: Unauthorized
+        "422":
+          description: family_tree payload is invalid
+  "/family_tree/{uuid}":
+    get:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The family_tree id
+      responses:
+        "200":
+          description: family_tree founded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/family_tree_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: family_tree not found
+    put:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The family_tree id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/family_tree_cu"
+      responses:
+        "200":
+          description: family_tree modified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/family_tree_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: family_tree not found
+        "422":
+          description: family_tree payload is invalid
+    delete:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The family_tree id
+      responses:
+        "204":
+          description: family_tree deleted
+        "401":
+          description: Unauthorized
+        "404":
+          description: family_tree not found

@@ -1,0 +1,172 @@
+openapi: 3.0.0
+info:
+  title: Javascript Project
+  description: Api for Javascript Project
+  version: 1.0.0
+servers:
+  - url: http://localhost:10200/api
+    description: The api in the docker compose
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    article_read:
+      type: object
+      required:
+        - uuid
+        - state
+        - url
+        - priority
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        state:
+          type: string
+          enum:
+            - wait
+            - read
+          example: read
+        url:
+          type: string
+          example: https://www.conseil-constitutionnel.fr/sites/default/files/as/root/bank_mm/anglais/constiution_anglais_oct2009.pdf
+        priority:
+          type: integer
+          example: 4
+    article_cu:
+      type: object
+      required:
+        - state
+        - url
+        - priority
+      properties:
+        state:
+          type: string
+          enum:
+            - wait
+            - read
+          example: read
+        url:
+          type: string
+          example: https://www.conseil-constitutionnel.fr/sites/default/files/as/root/bank_mm/anglais/constiution_anglais_oct2009.pdf
+        priority:
+          type: integer
+          example: 4
+paths:
+  /login:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: Login success
+  /article:
+    get:
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: '"List all article'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/article_read"
+        "401":
+          description: Unauthorized
+    post:
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/article_cu"
+      responses:
+        "201":
+          description: article created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/article_read"
+        "401":
+          description: Unauthorized
+        "422":
+          description: article payload is invalid
+  "/article/{uuid}":
+    get:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The article id
+      responses:
+        "200":
+          description: article founded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/article_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: article not found
+    put:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The article id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/article_cu"
+      responses:
+        "200":
+          description: article modified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/article_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: article not found
+        "422":
+          description: article payload is invalid
+    delete:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The article id
+      responses:
+        "204":
+          description: article deleted
+        "401":
+          description: Unauthorized
+        "404":
+          description: article not found

@@ -1,0 +1,174 @@
+openapi: 3.0.0
+info:
+  title: Javascript Project
+  description: Api for Javascript Project
+  version: 1.0.0
+servers:
+  - url: http://localhost:10200/api
+    description: The api in the docker compose
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    todo_read:
+      type: object
+      required:
+        - uuid
+        - name
+        - before
+        - priority
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Tax declaration
+        before:
+          type: string
+          example: 31/04/2021
+        priority:
+          type: string
+          enum:
+            - medium
+            - low
+            - hight
+          example: hight
+    todo_cu:
+      type: object
+      required:
+        - name
+        - before
+        - priority
+      properties:
+        name:
+          type: string
+          example: Tax declaration
+        before:
+          type: string
+          example: 31/04/2021
+        priority:
+          type: string
+          enum:
+            - medium
+            - low
+            - hight
+          example: hight
+paths:
+  /login:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: Login success
+  /todo:
+    get:
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: '"List all todo'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/todo_read"
+        "401":
+          description: Unauthorized
+    post:
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/todo_cu"
+      responses:
+        "201":
+          description: todo created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/todo_read"
+        "401":
+          description: Unauthorized
+        "422":
+          description: todo payload is invalid
+  "/todo/{uuid}":
+    get:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The todo id
+      responses:
+        "200":
+          description: todo founded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/todo_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: todo not found
+    put:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The todo id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/todo_cu"
+      responses:
+        "200":
+          description: todo modified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/todo_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: todo not found
+        "422":
+          description: todo payload is invalid
+    delete:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The todo id
+      responses:
+        "204":
+          description: todo deleted
+        "401":
+          description: Unauthorized
+        "404":
+          description: todo not found

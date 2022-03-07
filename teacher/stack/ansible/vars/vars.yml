@@ -1,0 +1,14 @@
+ansible_python_interpreter: /usr/bin/python3
+vault_domain: "vault.{{ domain_name }}"
+portainer_domain: "portainer.{{ domain_name }}"
+drone_domain: "drone.{{ domain_name }}"
+traefik_domain: "traefik.{{ domain_name }}"
+
+drone_github_client_id: "{{ lookup('env','DRONE_GITHUB_CLIENT_ID_'+ env|upper ) }}"
+drone_github_client_secret: "{{ lookup('env','DRONE_GITHUB_CLIENT_SECRET_'+ env|upper ) }}"
+drone_rpc_secret: "{{ lookup('env','DRONE_RPC_SECRET_'+ env|upper ) }}"
+ca_server: "https://acme-staging-v02.api.letsencrypt.org/directory"
+## OVH
+ovh_api_consumer_key: "{{ lookup('env','TF_VAR_ovh_api_consumer_key') }}"
+ovh_api_key: "{{ lookup('env','TF_VAR_ovh_api_key') }}"
+ovh_api_secret: "{{ lookup('env','TF_VAR_ovh_api_secret') }}"

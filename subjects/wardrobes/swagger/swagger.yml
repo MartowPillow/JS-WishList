@@ -1,0 +1,176 @@
+openapi: 3.0.0
+info:
+  title: Javascript Project
+  description: Api for Javascript Project
+  version: 1.0.0
+servers:
+  - url: http://localhost:10200/api
+    description: The api in the docker compose
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    wardrobes_read:
+      type: object
+      required:
+        - uuid
+        - season
+        - name
+        - brand
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        season:
+          type: string
+          enum:
+            - winter
+            - summer
+            - spring
+            - autunm
+          example: winter
+        name:
+          type: string
+          example: White woolen gilet
+        brand:
+          type: string
+          example: Homemade
+    wardrobes_cu:
+      type: object
+      required:
+        - season
+        - name
+        - brand
+      properties:
+        season:
+          type: string
+          enum:
+            - winter
+            - summer
+            - spring
+            - autunm
+          example: winter
+        name:
+          type: string
+          example: White woolen gilet
+        brand:
+          type: string
+          example: Homemade
+paths:
+  /login:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: Login success
+  /wardrobes:
+    get:
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: '"List all wardrobes'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/wardrobes_read"
+        "401":
+          description: Unauthorized
+    post:
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/wardrobes_cu"
+      responses:
+        "201":
+          description: wardrobes created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/wardrobes_read"
+        "401":
+          description: Unauthorized
+        "422":
+          description: wardrobes payload is invalid
+  "/wardrobes/{uuid}":
+    get:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The wardrobes id
+      responses:
+        "200":
+          description: wardrobes founded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/wardrobes_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: wardrobes not found
+    put:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The wardrobes id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/wardrobes_cu"
+      responses:
+        "200":
+          description: wardrobes modified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/wardrobes_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: wardrobes not found
+        "422":
+          description: wardrobes payload is invalid
+    delete:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The wardrobes id
+      responses:
+        "204":
+          description: wardrobes deleted
+        "401":
+          description: Unauthorized
+        "404":
+          description: wardrobes not found

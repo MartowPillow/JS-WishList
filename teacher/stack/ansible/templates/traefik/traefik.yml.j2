@@ -1,0 +1,25 @@
+api:
+  dashboard: true
+  insecure: true
+log:
+  level: DEBUG
+entryPoints:
+  https:
+    address: ":443"
+  http:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: https
+providers:
+  docker:
+    swarmMode: true
+    network: traefik
+certificatesResolvers:
+  acme:
+    acme:
+      # caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      email: "acme@dioudonnat.fr"
+      storage: /traefik/acme.json
+      tlsChallenge: {}

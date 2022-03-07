@@ -1,0 +1,19 @@
+id: 3
+milestone: 1
+content: |
+    Implementer le listing de tous les "{{subject}}" dans l'ai rest.
+
+    Vous devez suivre la spec openapi qui se trouve 
+    [ici](https://github.com/{{full_reponame}}/blob/master/subjects/{{subject}}/swagger/swagger.yml). Vous pouvez consulter la spec à l'adresse suivant : [http://localhost:10200/swagger/](http://localhost:10200/swagger/).
+
+    Vous allez travailler dans le dossier **"packages/express-middleware"**.
+
+    Vous allez utiliser le framework [expressjs](https://expressjs.com/en/guide/routing.html) Je vous laisse regarder la doc.
+
+    Il ne faut pas modifier les fichiers : 
+     * run.sh
+     * server.js
+
+    Vous pouvez utiliser la librairie [better-sqlite3](https://github.com/JoshuaWise/better-sqlite3/tree/v7.1.2) comment client sqlite3.
+
+    Vous avez une variable d'environement pour avoir le chemin de la base de donnée ([voir])(https://github.com/{{full_reponame}}/blob/master/docker-compose.yml#L48)

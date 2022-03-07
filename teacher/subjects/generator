@@ -1,0 +1,65 @@
+#!/usr/bin/env node
+
+const fs = require('fs');
+const {join} = require('path');
+const YAML = require('yaml')
+
+const dreddGenerator = require('./dredd-generator')
+const chaiGenerator = require('./chai-generator')
+const swaggerGenerator = require('./swagger-generator')
+const sqlGenerator = require('./sql-generator')
+
+
+function generateREADME(subjects) {
+    return ` # Subjects
+
+${ Object.getOwnPropertyNames(subjects).reduce((p, c) => {
+    return `${p}* ${c} [openapi](${c}/swagger/swagger.yml), [sql](${c}/sql/data.sql)\n`
+}, '')}
+`
+}
+
+const content = fs.readFileSync(join(__dirname, './data.yml'), 'utf-8')
+const data = YAML.parse(content)
+
+const path = join(__dirname, '../', '../')
+const PATHTODESTROY = join(path, 'subjects')
+console.log(PATHTODESTROY)
+
+fs.rmdirSync(PATHTODESTROY, { recursive: true})
+fs.mkdirSync(PATHTODESTROY)
+
+fs.writeFileSync(
+    join(PATHTODESTROY, 'README.md'),
+    generateREADME(data)
+);
+
+let i = 1
+
+function write(path , subjectName, config, part, generators) {
+    const pathTo = join(path, subjectName, part)
+    fs.mkdirSync(pathTo)
+
+    generators.forEach((generator) => {
+        generator(config, subjectName).forEach((file) => {
+            fs.writeFileSync(
+                join(pathTo, file.path),
+                file.content
+            );
+        })
+    })
+}
+
+for(const subjectName in data) {
+    try {
+    console.log(`${i} - ${subjectName}`)
+    i = i+1
+    fs.mkdirSync(join(PATHTODESTROY, subjectName))
+
+    write(PATHTODESTROY, subjectName, data[subjectName], 'chai', [chaiGenerator])
+    write(PATHTODESTROY, subjectName, data[subjectName], 'swagger', [swaggerGenerator])
+    write(PATHTODESTROY, subjectName, data[subjectName], 'sql', [sqlGenerator])
+    } catch(err) {
+        console.log(err)
+    }
+}

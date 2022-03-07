@@ -1,0 +1,4 @@
+id: 1
+milestone: 1
+content: |
+    Renomer le fichier ``.env.sample`` en ``.env`` et renseigner le avec les bonnes valeurs.

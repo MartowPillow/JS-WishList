@@ -1,0 +1,166 @@
+openapi: 3.0.0
+info:
+  title: Javascript Project
+  description: Api for Javascript Project
+  version: 1.0.0
+servers:
+  - url: http://localhost:10200/api
+    description: The api in the docker compose
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    book_read:
+      type: object
+      required:
+        - uuid
+        - name
+        - review
+        - page_read
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Pro Git
+        review:
+          type: string
+          example: Good book to learn git
+        page_read:
+          type: integer
+          example: 167
+    book_cu:
+      type: object
+      required:
+        - name
+        - review
+        - page_read
+      properties:
+        name:
+          type: string
+          example: Pro Git
+        review:
+          type: string
+          example: Good book to learn git
+        page_read:
+          type: integer
+          example: 167
+paths:
+  /login:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: Login success
+  /book:
+    get:
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: '"List all book'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/book_read"
+        "401":
+          description: Unauthorized
+    post:
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/book_cu"
+      responses:
+        "201":
+          description: book created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/book_read"
+        "401":
+          description: Unauthorized
+        "422":
+          description: book payload is invalid
+  "/book/{uuid}":
+    get:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The book id
+      responses:
+        "200":
+          description: book founded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/book_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: book not found
+    put:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The book id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/book_cu"
+      responses:
+        "200":
+          description: book modified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/book_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: book not found
+        "422":
+          description: book payload is invalid
+    delete:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The book id
+      responses:
+        "204":
+          description: book deleted
+        "401":
+          description: Unauthorized
+        "404":
+          description: book not found

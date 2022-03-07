@@ -1,0 +1,158 @@
+openapi: 3.0.0
+info:
+  title: Javascript Project
+  description: Api for Javascript Project
+  version: 1.0.0
+servers:
+  - url: http://localhost:10200/api
+    description: The api in the docker compose
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    technical_term_read:
+      type: object
+      required:
+        - uuid
+        - name
+        - definition
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: faîtage
+        definition:
+          type: string
+          example: Le haut de la charpente
+    technical_term_cu:
+      type: object
+      required:
+        - name
+        - definition
+      properties:
+        name:
+          type: string
+          example: faîtage
+        definition:
+          type: string
+          example: Le haut de la charpente
+paths:
+  /login:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: Login success
+  /technical_term:
+    get:
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: '"List all technical_term'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/technical_term_read"
+        "401":
+          description: Unauthorized
+    post:
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/technical_term_cu"
+      responses:
+        "201":
+          description: technical_term created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/technical_term_read"
+        "401":
+          description: Unauthorized
+        "422":
+          description: technical_term payload is invalid
+  "/technical_term/{uuid}":
+    get:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The technical_term id
+      responses:
+        "200":
+          description: technical_term founded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/technical_term_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: technical_term not found
+    put:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The technical_term id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/technical_term_cu"
+      responses:
+        "200":
+          description: technical_term modified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/technical_term_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: technical_term not found
+        "422":
+          description: technical_term payload is invalid
+    delete:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The technical_term id
+      responses:
+        "204":
+          description: technical_term deleted
+        "401":
+          description: Unauthorized
+        "404":
+          description: technical_term not found

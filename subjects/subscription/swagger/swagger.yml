@@ -1,0 +1,174 @@
+openapi: 3.0.0
+info:
+  title: Javascript Project
+  description: Api for Javascript Project
+  version: 1.0.0
+servers:
+  - url: http://localhost:10200/api
+    description: The api in the docker compose
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    subscription_read:
+      type: object
+      required:
+        - uuid
+        - name
+        - amount
+        - recurrence
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: EDF
+        amount:
+          type: number
+          format: float
+          example: 30.45
+        recurrence:
+          type: string
+          enum:
+            - monthly
+            - annually
+          example: monthly
+    subscription_cu:
+      type: object
+      required:
+        - name
+        - amount
+        - recurrence
+      properties:
+        name:
+          type: string
+          example: EDF
+        amount:
+          type: number
+          format: float
+          example: 30.45
+        recurrence:
+          type: string
+          enum:
+            - monthly
+            - annually
+          example: monthly
+paths:
+  /login:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: Login success
+  /subscription:
+    get:
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: '"List all subscription'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/subscription_read"
+        "401":
+          description: Unauthorized
+    post:
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/subscription_cu"
+      responses:
+        "201":
+          description: subscription created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/subscription_read"
+        "401":
+          description: Unauthorized
+        "422":
+          description: subscription payload is invalid
+  "/subscription/{uuid}":
+    get:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The subscription id
+      responses:
+        "200":
+          description: subscription founded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/subscription_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: subscription not found
+    put:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The subscription id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/subscription_cu"
+      responses:
+        "200":
+          description: subscription modified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/subscription_read"
+        "401":
+          description: Unauthorized
+        "404":
+          description: subscription not found
+        "422":
+          description: subscription payload is invalid
+    delete:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+            example: ad1afbd2-77d2-404e-bbca-3f352f7f09a2
+          required: true
+          description: The subscription id
+      responses:
+        "204":
+          description: subscription deleted
+        "401":
+          description: Unauthorized
+        "404":
+          description: subscription not found

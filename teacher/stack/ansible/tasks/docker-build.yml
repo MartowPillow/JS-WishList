@@ -1,0 +1,22 @@
+- name: Create docker build context dir
+  become: yes
+  ansible.builtin.file:
+    path: /tmp/docker/build
+    state: directory
+  
+- name: Copy docker build context file
+  become: yes
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../docker/back"
+    dest: /tmp/docker/build/
+
+- name: Build image for node testing
+  become: yes
+  community.general.docker_image:
+    build:
+      path: /tmp/docker/build/back
+    name: testing
+    tag: latest
+    source: build
+    force_source: yes
+    force_tag: yes

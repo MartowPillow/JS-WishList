@@ -1,0 +1,9 @@
+id: 5
+milestone: 1
+content: |
+    Implementer la method put "{{subject}}" dans l'ai rest. 
+
+    Vous devez implementer la method put qui permet de modifier un element
+
+    Vous devez suivre la spec openapi qui se trouve 
+    [ici](https://github.com/{{full_reponame}}/blob/master/{{subject}}/swagger/swagger.yml).
